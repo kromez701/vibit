@@ -4860,7 +4860,11 @@
         <header id="header">
           <div id="headerInner">
             <a id="headerLink" href="/" title="homepage">
-              <img src="/ruk_logo.png" alt="vibit" />
+              <img
+                src="/ruk_logo.png"
+                alt="vibit"
+                style="height: 30px !important; width: auto !important"
+              />
             </a>
           </div>
         </header>
@@ -7469,6 +7473,12 @@
           .howItWorksContent strong {
             font-weight: bold;
           }
+          #productV10ATC {
+            display: none !important;
+          }
+          .frame-content {
+            display: none !important;
+          }
 
           .howItWorksSwiperSlideItem {
             display: flex;
@@ -7553,9 +7563,6 @@
             .howItWorksContent {
               text-align: left;
             }
-          }
-          .productV10ATC {
-            display: none !important;
           }
         </style>
 
@@ -10452,5 +10459,146 @@
     });
 
     setInterval(replaceDollarInDOM, 300);
+  </script>
+
+  <script>
+    // Update price to £29.99 on page load
+    document.addEventListener("DOMContentLoaded", function () {
+      const priceActual = document.getElementById("productV10PriceActual");
+      if (priceActual) {
+        priceActual.textContent = "£29.99";
+      }
+    });
+
+    // Function to get selected variant combination
+    function getSelectedVariantCombination() {
+      const group1 = document.querySelector('input[name="group-1"]:checked');
+      const group2 = document.querySelector('input[name="group-2"]:checked');
+      const group3 = document.querySelector('input[name="group-3"]:checked');
+
+      if (!group1 || !group2 || !group3) {
+        return null;
+      }
+
+      return {
+        color1: group1.getAttribute("aria-label"),
+        color2: group2.getAttribute("aria-label"),
+        color3: group3.getAttribute("aria-label"),
+        value1: group1.value,
+        value2: group2.value,
+        value3: group3.value,
+      };
+    }
+
+    // Function to generate redirect URL based on variant combination
+    function getRedirectUrl(variant) {
+      if (!variant) {
+        // Default URL if no variant selected
+        return "https://example.com/checkout/default";
+      }
+
+      // Create a unique identifier based on the combination
+      const combinationKey = `${variant.value1}-${variant.value2}-${variant.value3}`;
+
+      // Define redirect URLs for different combinations
+      const redirectUrls = {
+        // All same color combinations
+        "44537455804696-44537455804696-44537455804696":
+          "https://example.com/checkout/triple-midnight-black",
+        "44537455935768-44537455935768-44537455935768":
+          "https://example.com/checkout/triple-sky-blue",
+        "44537455903000-44537455903000-44537455903000":
+          "https://example.com/checkout/triple-lilac",
+        "44537455837464-44537455837464-44537455837464":
+          "https://example.com/checkout/triple-pistachio-green",
+        "44537455870232-44537455870232-44537455870232":
+          "https://example.com/checkout/triple-pink",
+
+        // Mixed combinations - you can add specific URLs for popular combinations
+        "44537455804696-44537455935768-44537455903000":
+          "https://example.com/checkout/black-blue-lilac",
+        "44537455935768-44537455870232-44537455837464":
+          "https://example.com/checkout/blue-pink-green",
+        "44537455903000-44537455804696-44537455870232":
+          "https://example.com/checkout/lilac-black-pink",
+
+        // Add more specific combinations as needed...
+      };
+
+      // Return specific URL if combination exists, otherwise generate a generic one
+      if (redirectUrls[combinationKey]) {
+        return redirectUrls[combinationKey];
+      } else {
+        // Generate URL based on color names for unlisted combinations
+        const colorSlug = `${variant.color1
+          .toLowerCase()
+          .replace(/\s+/g, "-")}-${variant.color2
+          .toLowerCase()
+          .replace(/\s+/g, "-")}-${variant.color3
+          .toLowerCase()
+          .replace(/\s+/g, "-")}`;
+        return `https://example.com/checkout/custom/${colorSlug}`;
+      }
+    }
+
+    // Add event listener to the Add to Cart button
+    document.addEventListener("DOMContentLoaded", function () {
+      const addToCartButton = document.getElementById("productV10ATC");
+
+      if (addToCartButton) {
+        addToCartButton.addEventListener("click", function (e) {
+          e.preventDefault(); // Prevent default form submission
+
+          // Get selected variant combination
+          const selectedVariant = getSelectedVariantCombination();
+
+          // Get redirect URL
+          const redirectUrl = getRedirectUrl(selectedVariant);
+
+          // Optional: Add some analytics or tracking here
+          console.log("Redirecting with variant:", selectedVariant);
+          console.log("Redirect URL:", redirectUrl);
+
+          // Redirect to the determined URL
+          window.location.href = redirectUrl;
+        });
+      }
+    });
+
+    // Optional: Update URL preview when selections change
+    document.addEventListener("change", function (e) {
+      if (e.target.matches('input[name^="group-"]')) {
+        const selectedVariant = getSelectedVariantCombination();
+        const redirectUrl = getRedirectUrl(selectedVariant);
+
+        // You can display the URL somewhere on the page if desired
+        console.log("Current selection would redirect to:", redirectUrl);
+
+        // Optional: Update a preview element
+        const urlPreview = document.getElementById("urlPreview");
+        if (urlPreview) {
+          urlPreview.textContent = `Will redirect to: ${redirectUrl}`;
+        }
+      }
+    });
+
+    // Alternative: If you want to use a single URL with parameters instead of distinct URLs
+    function getRedirectUrlWithParams(variant) {
+      if (!variant) {
+        return "https://example.com/checkout?variant=default";
+      }
+
+      const params = new URLSearchParams({
+        color1: variant.color1,
+        color2: variant.color2,
+        color3: variant.color3,
+        value1: variant.value1,
+        value2: variant.value2,
+        value3: variant.value3,
+        price: "29.99",
+      });
+
+      return `https://example.com/checkout?${params.toString()}`;
+    }
   </script>
 </html>
