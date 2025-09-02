@@ -8,6 +8,12 @@
       .shoplift-hide {
         opacity: 0 !important;
       }
+      #headerNav,
+      #headerCart,
+      .swiper.swiper-initialized.swiper-horizontal.swiper-backface-hidden,
+      #footerContact {
+        display: none !important;
+      }
     </style>
     <style id="sl-preview-bar-hide">
       #preview-bar-iframe,
@@ -4745,6 +4751,40 @@
       data-shs="true"
       data-shs-beacon="true"
     ></script>
+    <script>
+      !(function (f, b, e, v, n, t, s) {
+        if (f.fbq) return;
+        n = f.fbq = function () {
+          n.callMethod
+            ? n.callMethod.apply(n, arguments)
+            : n.queue.push(arguments);
+        };
+        if (!f._fbq) f._fbq = n;
+        n.push = n;
+        n.loaded = !0;
+        n.version = "2.0";
+        n.queue = [];
+        t = b.createElement(e);
+        t.async = !0;
+        t.src = v;
+        s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s);
+      })(
+        window,
+        document,
+        "script",
+        "https://connect.facebook.net/en_US/fbevents.js"
+      );
+      fbq("init", "1497972024708962");
+      fbq("track", "PageView");
+    </script>
+    <noscript
+      ><img
+        height="1"
+        width="1"
+        style="display: none"
+        src="https://www.facebook.com/tr?id=1497972024708962&ev=PageView&noscript=1"
+    /></noscript>
   </head>
 
   <body>
@@ -4800,10 +4840,7 @@
         <header id="header">
           <div id="headerInner">
             <a id="headerLink" href="/" title="homepage">
-              <img
-                src="//thevibit.com/cdn/shop/t/54/assets/vibit-logo-black.svg?v=54985405597167287471730329067"
-                alt="vibit"
-              />
+              <img src="/ruk_logo.png" alt="vibit" />
             </a>
 
             <nav id="headerNav">
@@ -8824,7 +8861,7 @@
               </div>
               <div class="chartRespire">
                 <img
-                  src="//thevibit.com/cdn/shop/t/54/assets/vibit-logo-white.svg?v=57966572993978994241730329067"
+                  src="/ruk_logo_1.png"
                   alt="logo"
                   class="chartRespireLogo"
                 />
@@ -10004,57 +10041,44 @@
               >
             </div>
             <div id="footerLogo">
-              <img
-                src="//thevibit.com/cdn/shop/t/54/assets/vibit-logo-teal.svg?v=80847251078182438851730329065"
-                alt="vibit"
-              />
+              <img src="/ruk_logo.png" alt="vibit" />
             </div>
           </div>
 
           <nav id="footerNav">
-            <a class="footerNavItem" href="/pages/about">Our Story</a>
+            <a class="footerNavItem" href="/">Our Story</a>
 
-            <a class="footerNavItem" href="/pages/contact">Contact Us</a>
+            <a class="footerNavItem" href="/">Contact Us</a>
 
-            <a class="footerNavItem" href="/pages/privacy-policy"
-              >Privacy Policy</a
-            >
+            <a class="footerNavItem" href="/">Privacy Policy</a>
 
-            <a class="footerNavItem" href="/pages/terms-and-conditions"
-              >Terms and Conditions</a
-            >
+            <a class="footerNavItem" href="/">Terms and Conditions</a>
 
-            <a class="footerNavItem" href="/pages/warranty-info"
-              >Warranty Info</a
-            >
+            <a class="footerNavItem" href="/">Warranty Info</a>
 
-            <a class="footerNavItem" href="/pages/shipping-and-delivery"
-              >Shipping and Delivery</a
-            >
+            <a class="footerNavItem" href="/">Shipping and Delivery</a>
           </nav>
         </div>
 
         <div id="footerSocial">
           <div id="footerSocialTitle">JOIN OUR COMMUNITY AT</div>
           <div id="footerSocialIcons">
-            <a href="https://www.facebook.com/thevibit" target="_blank"
+            <a href="/" target="_blank"
               ><img
                 src="//thevibit.com/cdn/shop/t/54/assets/icon_tiktok.svg?v=109405785536363918611730329066"
                 alt="tiktok"
             /></a>
-            <a href="https://www.facebook.com/thevibit" target="_blank"
+            <a href="/" target="_blank"
               ><img
                 src="//thevibit.com/cdn/shop/t/54/assets/icon_fb.svg?v=85380420906271957441730329065"
                 alt="facebook"
             /></a>
-            <a href="https://twitter.com/TheVibit?s=20" target="_blank"
+            <a href="/" target="_blank"
               ><img
                 src="//thevibit.com/cdn/shop/t/54/assets/icon_twitter.svg?v=153796777448249425131730329066"
                 alt="twitter"
             /></a>
-            <a
-              href="https://www.instagram.com/thevibit/?hl=en%E2%80%A8FB"
-              target="_blank"
+            <a href="/" target="_blank"
               ><img
                 src="//thevibit.com/cdn/shop/t/54/assets/icon_insta.svg?v=5285361468436499911730329066"
                 alt="instagram"
