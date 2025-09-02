@@ -10462,12 +10462,116 @@
   </script>
 
   <script>
-    // Update price to £29.99 on page load
-    document.addEventListener("DOMContentLoaded", function () {
+    //   // Update price to £34.97 on page load
+    //   document.addEventListener("DOMContentLoaded", function () {
+    //     const priceActual = document.getElementById("productV10PriceActual");
+    //     if (priceActual) {
+    //       priceActual.textContent = "£34.97";
+    //     }
+    //   });
+
+    //   // Function to get any selected color (from any group)
+    //   function getSelectedColor() {
+    //     // Check all groups for selected color
+    //     const group1 = document.querySelector('input[name="group-1"]:checked');
+    //     const group2 = document.querySelector('input[name="group-2"]:checked');
+    //     const group3 = document.querySelector('input[name="group-3"]:checked');
+
+    //     // Return the first selected color found, or default to first option
+    //     const selected = group1 || group2 || group3;
+    //     return selected ? selected.value : "44537455804696"; // Default to Midnight Black
+    //   }
+
+    //   // Function to get redirect URL based on selected color
+    //   function getRedirectUrl(colorValue) {
+    //     // Define redirect URLs for each color variant
+    //     const redirectUrls = {
+    //       44537455804696: "https://n2kzpa-uw.myshopify.com/cart/52337272324429:1", // Midnight Black
+    //       44537455935768: "https://n2kzpa-uw.myshopify.com/cart/52337272357197:1", // Sky Blue
+    //       44537455903000: "https://n2kzpa-uw.myshopify.com/cart/52337272389965:1", // Lilac
+    //       44537455837464: "https://n2kzpa-uw.myshopify.com/cart/52337272422733:1", // Pistachio Green
+    //       44537455870232: "https://n2kzpa-uw.myshopify.com/cart/52337272455501:1", // Pink
+    //     };
+
+    //     return redirectUrls[colorValue] || redirectUrls["44537455804696"]; // Default to Midnight Black URL
+    //   }
+
+    //   // Add event listener to the Add to Cart button
+    //   document.addEventListener("DOMContentLoaded", function () {
+    //     const addToCartButton = document.getElementById("productV10ATC");
+
+    //     if (addToCartButton) {
+    //       addToCartButton.addEventListener("click", function (e) {
+    //         e.preventDefault(); // Prevent default form submission
+
+    //         // Get selected color value
+    //         const selectedColorValue = getSelectedColor();
+
+    //         // Get redirect URL
+    //         const redirectUrl = getRedirectUrl(selectedColorValue);
+
+    //         // Optional: Add some analytics or tracking here
+    //         console.log("Redirecting with color value:", selectedColorValue);
+    //         console.log("Redirect URL:", redirectUrl);
+
+    //         // Redirect to the determined URL
+    //         window.location.href = redirectUrl;
+    //       });
+    //     }
+    //   });
+
+    //   // Optional: Update URL preview when selections change
+    //   document.addEventListener("change", function (e) {
+    //     if (e.target.matches('input[name^="group-"]')) {
+    //       const selectedColorValue = getSelectedColor();
+    //       const redirectUrl = getRedirectUrl(selectedColorValue);
+
+    //       // You can display the URL somewhere on the page if desired
+    //       console.log("Current selection would redirect to:", redirectUrl);
+
+    //       // Optional: Update a preview element
+    //       const urlPreview = document.getElementById("urlPreview");
+    //       if (urlPreview) {
+    //         urlPreview.textContent = `Will redirect to: ${redirectUrl}`;
+    //       }
+    //     }
+    //   });
+    //
+  </script>
+
+  <script>
+    // Price protection - ensure price stays at £34.97 always
+    const FIXED_PRICE = "£34.97";
+
+    // Function to set and lock the price
+    function setFixedPrice() {
       const priceActual = document.getElementById("productV10PriceActual");
       if (priceActual) {
-        priceActual.textContent = "£34.97";
+        priceActual.textContent = FIXED_PRICE;
       }
+
+      // Also check for other common price element selectors
+      const priceElements = document.querySelectorAll(
+        [
+          "#productV10PriceActual",
+          ".price",
+          ".product-price",
+          ".variant-price",
+          "[data-price]",
+          ".money",
+        ].join(",")
+      );
+
+      priceElements.forEach((element) => {
+        if (element && element.textContent !== FIXED_PRICE) {
+          element.textContent = FIXED_PRICE;
+        }
+      });
+    }
+
+    // Set price on page load
+    document.addEventListener("DOMContentLoaded", function () {
+      setFixedPrice();
     });
 
     // Function to get any selected color (from any group)
@@ -10476,7 +10580,6 @@
       const group1 = document.querySelector('input[name="group-1"]:checked');
       const group2 = document.querySelector('input[name="group-2"]:checked');
       const group3 = document.querySelector('input[name="group-3"]:checked');
-
       // Return the first selected color found, or default to first option
       const selected = group1 || group2 || group3;
       return selected ? selected.value : "44537455804696"; // Default to Midnight Black
@@ -10492,21 +10595,21 @@
         44537455837464: "https://n2kzpa-uw.myshopify.com/cart/52337272422733:1", // Pistachio Green
         44537455870232: "https://n2kzpa-uw.myshopify.com/cart/52337272455501:1", // Pink
       };
-
       return redirectUrls[colorValue] || redirectUrls["44537455804696"]; // Default to Midnight Black URL
     }
 
     // Add event listener to the Add to Cart button
     document.addEventListener("DOMContentLoaded", function () {
       const addToCartButton = document.getElementById("productV10ATC");
-
       if (addToCartButton) {
         addToCartButton.addEventListener("click", function (e) {
           e.preventDefault(); // Prevent default form submission
 
+          // Ensure price is still correct before redirect
+          setFixedPrice();
+
           // Get selected color value
           const selectedColorValue = getSelectedColor();
-
           // Get redirect URL
           const redirectUrl = getRedirectUrl(selectedColorValue);
 
@@ -10520,9 +10623,12 @@
       }
     });
 
-    // Optional: Update URL preview when selections change
+    // Enhanced variant change handling with price protection
     document.addEventListener("change", function (e) {
       if (e.target.matches('input[name^="group-"]')) {
+        // Always reset price when variant changes
+        setTimeout(setFixedPrice, 50); // Small delay to ensure DOM updates first
+
         const selectedColorValue = getSelectedColor();
         const redirectUrl = getRedirectUrl(selectedColorValue);
 
@@ -10535,6 +10641,38 @@
           urlPreview.textContent = `Will redirect to: ${redirectUrl}`;
         }
       }
+    });
+
+    // Additional protection: Watch for any DOM changes that might affect price
+    const observer = new MutationObserver(function (mutations) {
+      mutations.forEach(function (mutation) {
+        // Check if any price-related elements were modified
+        if (
+          mutation.target.id === "productV10PriceActual" ||
+          mutation.target.classList.contains("price") ||
+          mutation.target.classList.contains("product-price")
+        ) {
+          setFixedPrice();
+        }
+      });
+    });
+
+    // Start observing when DOM is ready
+    document.addEventListener("DOMContentLoaded", function () {
+      // Observe the entire document for price changes
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+
+      // Set up interval as backup protection
+      setInterval(setFixedPrice, 1000); // Check and fix price every second
+    });
+
+    // Final fallback: before page unload, ensure price is correct
+    window.addEventListener("beforeunload", function () {
+      setFixedPrice();
     });
   </script>
 </html>
