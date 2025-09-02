@@ -10864,15 +10864,173 @@
   //
 </script>
 
+//The best implementation so far //
+<script>
+  //   // Price protection - ensure price stays at £34.97 always
+  //   const FIXED_PRICE = "£34.97";
+
+  //   // Function to set and lock the price
+  //   function setFixedPrice() {
+  //     const priceActual = document.getElementById("productV10PriceActual");
+  //     if (priceActual) {
+  //       priceActual.textContent = FIXED_PRICE;
+  //     }
+  //   }
+
+  //   // Function to get any selected color (from any group)
+  //   function getSelectedColor() {
+  //     const group1 = document.querySelector('input[name="group-1"]:checked');
+  //     const group2 = document.querySelector('input[name="group-2"]:checked');
+  //     const group3 = document.querySelector('input[name="group-3"]:checked');
+  //     const selected = group1 || group2 || group3;
+  //     return selected ? selected.value : "44537455804696"; // Default to Midnight Black
+  //   }
+
+  //   // Function to get redirect URL based on selected color
+  //   function getRedirectUrl(colorValue) {
+  //     const redirectUrls = {
+  //       44537455804696: "https://n2kzpa-uw.myshopify.com/cart/52337272324429:1", // Midnight Black
+  //       44537455935768: "https://n2kzpa-uw.myshopify.com/cart/52337272357197:1", // Sky Blue
+  //       44537455903000: "https://n2kzpa-uw.myshopify.com/cart/52337272389965:1", // Lilac
+  //       44537455837464: "https://n2kzpa-uw.myshopify.com/cart/52337272422733:1", // Pistachio Green
+  //       44537455870232: "https://n2kzpa-uw.myshopify.com/cart/52337272455501:1", // Pink
+  //     };
+  //     return redirectUrls[colorValue] || redirectUrls["44537455804696"];
+  //   }
+
+  //   // Main redirect function
+  //   function handleAddToCart() {
+  //     console.log("Add to cart function called!");
+  //     setFixedPrice();
+  //     const selectedColorValue = getSelectedColor();
+  //     const redirectUrl = getRedirectUrl(selectedColorValue);
+  //     console.log("Redirecting to:", redirectUrl);
+  //     window.location.href = redirectUrl;
+  //     return false; // Prevent form submission
+  //   }
+
+  //   // Set price on page load
+  //   document.addEventListener("DOMContentLoaded", function () {
+  //     setFixedPrice();
+  //     console.log("DOM loaded, price set to", FIXED_PRICE);
+
+  //     // Try multiple ways to attach the event
+
+  //     // Method 1: Direct ID lookup
+  //     const button1 = document.getElementById("productV10ATC");
+  //     if (button1) {
+  //       console.log("Found button by ID, attaching listener");
+  //       button1.onclick = handleAddToCart;
+  //     }
+
+  //     // Method 2: Try all buttons that might be add-to-cart
+  //     const buttons = document.querySelectorAll(
+  //       'button, input[type="submit"], input[type="button"]'
+  //     );
+  //     buttons.forEach((btn, index) => {
+  //       const text = btn.textContent || btn.value || "";
+  //       if (
+  //         text.toLowerCase().includes("add") ||
+  //         text.toLowerCase().includes("cart") ||
+  //         btn.id === "productV10ATC"
+  //       ) {
+  //         console.log(`Attaching to button ${index}:`, text);
+  //         btn.onclick = function (e) {
+  //           e.preventDefault();
+  //           return handleAddToCart();
+  //         };
+  //       }
+  //     });
+
+  //     // Method 3: Try form submission
+  //     const forms = document.querySelectorAll("form");
+  //     forms.forEach((form, index) => {
+  //       console.log(`Attaching to form ${index}`);
+  //       form.onsubmit = function (e) {
+  //         e.preventDefault();
+  //         return handleAddToCart();
+  //       };
+  //     });
+  //   });
+
+  //   // Also try after a delay
+  //   setTimeout(function () {
+  //     const button = document.getElementById("productV10ATC");
+  //     if (button && !button.onclick) {
+  //       console.log("Backup: Attaching to button after delay");
+  //       button.onclick = handleAddToCart;
+  //     }
+  //   }, 2000);
+
+  //   // Price protection on variant change
+  //   document.addEventListener("change", function (e) {
+  //     if (e.target.matches('input[name^="group-"]')) {
+  //       setTimeout(setFixedPrice, 100);
+  //     }
+  //   });
+
+  //   // Global function accessible from anywhere
+  //   window.addToCartRedirect = handleAddToCart;
+  //
+</script>
+
 <script>
   // Price protection - ensure price stays at £34.97 always
   const FIXED_PRICE = "£34.97";
 
-  // Function to set and lock the price
+  // Enhanced function to set and lock the price with anti-flicker protection
   function setFixedPrice() {
-    const priceActual = document.getElementById("productV10PriceActual");
-    if (priceActual) {
-      priceActual.textContent = FIXED_PRICE;
+    const priceElements = [
+      document.getElementById("productV10PriceActual"),
+      ...document.querySelectorAll(
+        ".price, .product-price, .variant-price, [data-price], .money, .price-item"
+      ),
+    ];
+
+    priceElements.forEach((element) => {
+      if (element && element.textContent !== FIXED_PRICE) {
+        element.textContent = FIXED_PRICE;
+        // Immediately hide any price that tries to show different values
+        element.style.visibility = "visible";
+      }
+    });
+  }
+
+  // Aggressive price protection - intercept before display
+  function interceptPriceChanges() {
+    const priceElement = document.getElementById("productV10PriceActual");
+    if (priceElement) {
+      // Override the textContent setter
+      let originalTextContent = Object.getOwnPropertyDescriptor(
+        Node.prototype,
+        "textContent"
+      );
+      Object.defineProperty(priceElement, "textContent", {
+        set: function (value) {
+          // Always force our fixed price
+          originalTextContent.set.call(this, FIXED_PRICE);
+        },
+        get: function () {
+          return FIXED_PRICE;
+        },
+      });
+
+      // Override innerHTML as well
+      let originalInnerHTML = Object.getOwnPropertyDescriptor(
+        Element.prototype,
+        "innerHTML"
+      );
+      Object.defineProperty(priceElement, "innerHTML", {
+        set: function (value) {
+          originalInnerHTML.set.call(this, FIXED_PRICE);
+        },
+        get: function () {
+          return FIXED_PRICE;
+        },
+      });
+
+      // Set initial value
+      priceElement.textContent = FIXED_PRICE;
     }
   }
 
@@ -10908,10 +11066,16 @@
     return false; // Prevent form submission
   }
 
-  // Set price on page load
+  // Set price on page load with enhanced protection
   document.addEventListener("DOMContentLoaded", function () {
     setFixedPrice();
+    interceptPriceChanges();
     console.log("DOM loaded, price set to", FIXED_PRICE);
+
+    // Start continuous price monitoring immediately
+    const priceMonitor = setInterval(function () {
+      setFixedPrice();
+    }, 10); // Check every 10ms for ultra-fast correction
 
     // Try multiple ways to attach the event
 
@@ -10961,12 +11125,70 @@
     }
   }, 2000);
 
-  // Price protection on variant change
+  // Enhanced price protection on variant change with immediate response
   document.addEventListener("change", function (e) {
     if (e.target.matches('input[name^="group-"]')) {
-      setTimeout(setFixedPrice, 100);
+      // Immediately set price before any other processing
+      setFixedPrice();
+      // Also set it multiple times in quick succession to catch any delays
+      setTimeout(setFixedPrice, 1);
+      setTimeout(setFixedPrice, 5);
+      setTimeout(setFixedPrice, 10);
+      setTimeout(setFixedPrice, 25);
+      setTimeout(setFixedPrice, 50);
     }
   });
+
+  // Intercept variant changes at the click level (even earlier)
+  document.addEventListener("click", function (e) {
+    if (e.target.matches('input[name^="group-"], label[for^="group-"]')) {
+      // Pre-emptively set the price before the change even processes
+      setFixedPrice();
+      setTimeout(setFixedPrice, 0);
+    }
+  });
+
+  // Watch for any DOM changes that might affect price with immediate response
+  const observer = new MutationObserver(function (mutations) {
+    let priceChanged = false;
+    mutations.forEach(function (mutation) {
+      if (
+        mutation.target.id === "productV10PriceActual" ||
+        mutation.target.classList.contains("price") ||
+        mutation.target.classList.contains("product-price") ||
+        (mutation.type === "characterData" &&
+          mutation.target.parentNode &&
+          (mutation.target.parentNode.id === "productV10PriceActual" ||
+            mutation.target.parentNode.classList.contains("price")))
+      ) {
+        priceChanged = true;
+      }
+    });
+    if (priceChanged) {
+      setFixedPrice();
+    }
+  });
+
+  // Start observing immediately when script loads
+  if (document.body) {
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+      attributes: true,
+      attributeFilter: ["class", "id"],
+    });
+  } else {
+    document.addEventListener("DOMContentLoaded", function () {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+        attributes: true,
+        attributeFilter: ["class", "id"],
+      });
+    });
+  }
 
   // Global function accessible from anywhere
   window.addToCartRedirect = handleAddToCart;
